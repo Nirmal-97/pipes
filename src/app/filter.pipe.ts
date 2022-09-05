@@ -1,19 +1,10 @@
-import { Component, Pipe } from '@angular/core';
-import { filter } from 'rxjs';
+import { Pipe, PipeTransform } from '@angular/core';
 
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+@Pipe({
+  name: 'filter',
 })
-export class AppComponent {
-  appStatus = new Promise((
-    resolve, reject
-  ) => {
-    setTimeout(() => {
-      resolve('status');
-    }, 2000)
-  }); 
+export class FilterPipe implements PipeTransform {
+
   servers = [
     {
       instanceType: 'medium',
@@ -53,6 +44,19 @@ export class AppComponent {
       'list-group-item-warning': server.status === 'offline',
       'list-group-item-danger': server.status === 'critical',
     };
+  }
+
+  transform(value: any, filterString: string, propName: string): any {
+    if (value.length === 0 || filterString === '') {
+      return value;
+    }
+    const resultArray = [];
+    for (const item of value) {
+      if (item[propName] === filterString) {
+        resultArray.push(item);
+      }
+    }
+    return resultArray;
   }
 
   onAddServer() {
